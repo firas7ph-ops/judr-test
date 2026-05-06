@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>جدر — تصميم داخلي وتنفيذ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens ---------- */
+  :root{
+    --linen: #F1ECE2;
+    --linen-2: #EAE3D5;
+    --linen-deep: #2C2A26;
+    --ink: #1C1C1A;
+    --ink-soft: #3A3833;
+    --muted: #8A847A;
+    --muted-2: #B5AE9F;
+    --rule: #D9D1BF;
+    --gold: #C4A882;
+    --gold-deep: #A88B62;
+
+    --serif-ar: "Cormorant Garamond", "Noto Naskh Arabic", "Playfair Display", serif;
+    --serif-en: "Playfair Display", "Cormorant Garamond", serif;
+    --sans-ar: "Noto Kufi Arabic", "Inter", system-ui, sans-serif;
+
+    --maxw: 1280px;
+    --gutter: clamp(20px, 4vw, 56px);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background: var(--linen);
+    color: var(--ink);
+    font-family: var(--sans-ar);
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+  .wrap{max-width: var(--maxw); margin:0 auto; padding: 0 var(--gutter);}
+
+  /* ---------- Typography ---------- */
+  .eyebrow{
+    font-family: var(--sans-ar);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .32em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .eyebrow .dot{
+    display:inline-block; width:5px; height:5px; border-radius:50%;
+    background: var(--gold); margin: 0 10px 2px; vertical-align: middle;
+  }
+  h1,h2,h3{
+    font-family: var(--serif-ar);
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.12;
+    letter-spacing: -0.005em;
+  }
+  h1{ font-size: clamp(44px, 7.4vw, 108px); font-weight: 500; }
+  h2{ font-size: clamp(34px, 5vw, 68px); font-weight: 500; }
+  h3{ font-size: clamp(20px, 1.6vw, 26px); font-weight: 600; }
+  p{margin:0}
+
+  .lede{
+    font-family: var(--sans-ar);
+    color: var(--ink-soft);
+    font-size: clamp(15px, 1.15vw, 18px);
+    font-weight: 300;
+    line-height: 1.85;
+  }
+  .muted{ color: var(--muted); }
+
+  /* ---------- Buttons ---------- */
+  .pill{
+    display:inline-flex; align-items:center; gap: 14px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-family: var(--sans-ar);
+    font-size: 14px; font-weight: 500;
+    background: var(--ink); color: var(--linen);
+    transition: transform .25s ease, background .25s ease;
+    border: 1px solid var(--ink);
+  }
+  .pill:hover{ background: #000; transform: translateY(-1px); }
+  .pill .arrow{ display:inline-block; transition: transform .3s ease; }
+  .pill:hover .arrow{ transform: translateX(-4px); }
+  .pill.lg{ padding: 18px 36px; font-size: 15px; }
+  .pill.ghost{
+    background: transparent; color: var(--ink); border-color: var(--ink);
+  }
+  .pill.ghost:hover{ background: var(--ink); color: var(--linen); }
+
+  .pill.sm{ padding: 10px 20px; font-size: 13px; }
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in oklab, var(--linen) 92%, transparent);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s ease, background .3s ease;
+  }
+  .nav.is-stuck{ border-bottom-color: var(--rule); }
+  .nav-inner{
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:center;
+    height: 84px;
+    gap: 24px;
+  }
+  .nav-brand{ display:flex; align-items:center; gap: 12px; }
+  .nav-brand img{ width: 36px; height: 36px; object-fit: contain; }
+  .nav-brand .word{
+    font-family: var(--serif-en); font-size: 22px; font-weight: 500; letter-spacing: .01em;
+  }
+  .nav-links{
+    display:flex; justify-content:center; gap: clamp(20px, 3vw, 44px);
+    font-size: 14px; font-weight: 400; color: var(--ink-soft);
+  }
+  .nav-links a{
+    position: relative; padding: 8px 2px;
+    transition: color .25s ease;
+  }
+  .nav-links a::after{
+    content:""; position:absolute; right:0; left:0; bottom: 0;
+    height: 1px; background: var(--ink);
+    transform: scaleX(0); transform-origin: right;
+    transition: transform .35s ease;
+  }
+  .nav-links a:hover::after, .nav-links a.active::after{ transform: scaleX(1); }
+  .nav-cta{ display:flex; justify-content: flex-start; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding-top: clamp(60px, 9vw, 130px);
+    padding-bottom: clamp(40px, 6vw, 80px);
+    text-align: center;
+    position: relative;
+  }
+  .hero .eyebrow{ display:block; margin-bottom: 28px; }
+  .hero h1{
+    max-width: 16ch;
+    margin: 0 auto;
+  }
+  .hero h1 .accent{
+    font-family: var(--serif-ar);
+    font-style: italic;
+    color: var(--gold-deep);
+    font-weight: 400;
+  }
+  .hero .sub{
+    max-width: 46ch;
+    margin: 32px auto 40px;
+    color: var(--muted);
+    font-size: clamp(15px, 1.1vw, 17px);
+  }
+
+  /* hero photo strip — staggered */
+  .strip{
+    margin-top: clamp(60px, 9vw, 110px);
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: clamp(12px, 1.6vw, 22px);
+    align-items: end;
+  }
+  .strip .ph{ border-radius: 4px; overflow:hidden; position: relative; }
+  .strip .ph-1{ grid-column: 1 / span 3; aspect-ratio: 3/4.2; transform: translateY(-30px);}
+  .strip .ph-2{ grid-column: 4 / span 3; aspect-ratio: 3/3.4;}
+  .strip .ph-3{ grid-column: 7 / span 3; aspect-ratio: 3/4.6; transform: translateY(40px);}
+  .strip .ph-4{ grid-column: 10 / span 3; aspect-ratio: 3/3.6;}
+
+  /* ---------- Section frame ---------- */
+  section{ padding: clamp(80px, 10vw, 160px) 0; }
+  .section-label{
+    display:flex; align-items:center; gap: 16px;
+    margin-bottom: clamp(28px, 3vw, 44px);
+  }
+  .section-label .line{
+    flex: 0 0 56px; height:1px; background: var(--gold);
+  }
+  .section-label.center{ justify-content:center; }
+
+  /* ---------- Problem ---------- */
+  .problem h2{ max-width: 22ch; }
+  .problem-head{
+    display:grid; grid-template-columns: 1.1fr .9fr; gap: 60px;
+    align-items: end;
+    margin-bottom: clamp(60px, 8vw, 100px);
+  }
+  .problem-head .aside{
+    color: var(--muted); padding-bottom: 8px;
+    max-width: 32ch;
+    border-top: 1px solid var(--rule);
+    padding-top: 22px;
+  }
+  .pains{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 56px);
+  }
+  .pain{
+    border-top: 1px solid var(--gold);
+    padding-top: 22px;
+  }
+  .pain .num{
+    font-family: var(--serif-en);
+    font-style: italic;
+    color: var(--gold-deep);
+    font-size: 13px;
+    letter-spacing: .04em;
+    margin-bottom: 14px;
+  }
+  .pain p{
+    font-family: var(--serif-ar);
+    font-size: clamp(20px, 1.7vw, 26px);
+    line-height: 1.45;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .problem-foot{
+    margin-top: clamp(50px, 6vw, 80px);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: .02em;
+  }
+  .problem-foot::before{
+    content:""; display:block; width:1px; height:40px; background: var(--rule); margin: 0 auto 22px;
+  }
+
+  /* ---------- Guide ---------- */
+  .guide{ background: var(--linen-2); }
+  .guide-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 90px);
+    align-items: center;
+  }
+  .guide-img{
+    aspect-ratio: 4 / 5;
+    border-radius: 4px; overflow:hidden;
+  }
+  .guide h2{ margin: 18px 0 28px; max-width: 14ch; }
+  .guide h2 em{
+    font-style: italic; color: var(--gold-deep); font-weight: 400;
+  }
+  .guide .lede{ max-width: 44ch; }
+  .guide .proof{
+    margin-top: 36px;
+    padding-top: 26px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.85;
+    max-width: 44ch;
+  }
+
+  /* ---------- Methodology ---------- */
+  .method{ text-align:center; }
+  .method h2{ max-width: 18ch; margin: 0 auto; }
+  .method h2 em{ font-style: italic; color: var(--gold-deep); font-weight: 400;}
+  .method-intro{
+    margin: 24px auto 0;
+    color: var(--muted);
+    max-width: 46ch;
+    font-size: 15px;
+  }
+  .timeline{
+    margin-top: clamp(70px, 9vw, 120px);
+    position: relative;
+  }
+  .timeline-track{
+    position: absolute;
+    top: 64px;
+    right: 12%; left: 12%;
+    height: 1px; background: var(--rule);
+  }
+  .timeline-track::before, .timeline-track::after{
+    content:""; position:absolute; top:50%; width:7px; height:7px; border-radius:50%;
+    background: var(--gold); transform: translateY(-50%);
+  }
+  .timeline-track::before{ right: -3px; }
+  .timeline-track::after{ left: -3px; }
+  .steps{
+    display:grid; grid-template-columns: repeat(3,1fr);
+    gap: clamp(24px, 4vw, 56px);
+    position: relative;
+  }
+  .step{
+    text-align: center;
+    padding: 0 8px;
+  }
+  .step .num{
+    display:flex; align-items:center; justify-content:center;
+    width: 128px; height: 128px;
+    margin: 0 auto;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: var(--linen);
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 56px;
+    font-weight: 400;
+    color: var(--gold-deep);
+    position: relative;
+  }
+  .step .num::before{
+    content:""; position:absolute; inset: 8px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    transition: border-color .4s ease;
+  }
+  .step:hover .num::before{ border-color: var(--gold); }
+  .step h3{
+    margin-top: 32px;
+    font-family: var(--serif-ar);
+    font-size: clamp(22px, 2vw, 30px);
+    font-weight: 500;
+  }
+  .step p{
+    margin: 14px auto 0;
+    color: var(--muted);
+    max-width: 28ch;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+  .method-divider{
+    margin: clamp(70px, 9vw, 110px) auto 0;
+    width: 80%; height: 1px; background: var(--gold);
+    position: relative;
+  }
+  .method-divider::before{
+    content:""; position:absolute; top:50%; right:50%;
+    transform: translate(50%, -50%) rotate(45deg);
+    width: 8px; height: 8px; background: var(--gold);
+  }
+
+  /* ---------- Work showcase ---------- */
+  .work{ }
+  .work-head{
+    display:flex; justify-content: space-between; align-items: end;
+    flex-wrap: wrap; gap: 24px;
+    margin-bottom: clamp(50px, 6vw, 80px);
+  }
+  .work-head h2{ max-width: 18ch; }
+  .work-head .meta{ color: var(--muted); font-size: 14px; padding-bottom: 6px; }
+
+  .work-grid{
+    display:grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: clamp(20px, 2.4vw, 36px) clamp(20px, 2vw, 28px);
+  }
+  .work-card{ display:block; }
+  .work-card .ph{ border-radius: 3px; overflow:hidden; }
+  .work-card .meta-row{
+    display:flex; justify-content: space-between; align-items: baseline;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    gap: 16px;
+  }
+  .work-card .desc{
+    font-family: var(--serif-ar);
+    font-size: clamp(17px, 1.3vw, 21px);
+    color: var(--ink);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .work-card .tag{
+    font-size: 11px; letter-spacing: .22em; color: var(--muted);
+    text-transform: uppercase;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+
+  .work-card.c1{ grid-column: 1 / span 7; }
+  .work-card.c1 .ph{ aspect-ratio: 7/5; }
+  .work-card.c2{ grid-column: 8 / span 5; transform: translateY(60px); }
+  .work-card.c2 .ph{ aspect-ratio: 5/6; }
+  .work-card.c3{ grid-column: 1 / span 5; }
+  .work-card.c3 .ph{ aspect-ratio: 5/5.5; }
+  .work-card.c4{ grid-column: 6 / span 7; transform: translateY(-40px); }
+  .work-card.c4 .ph{ aspect-ratio: 7/4.6; }
+
+  /* ---------- Failure line ---------- */
+  .failure{
+    text-align:center;
+    padding: clamp(80px, 10vw, 140px) 0;
+  }
+  .failure p{
+    font-family: var(--serif-ar);
+    font-style: italic;
+    font-size: clamp(22px, 2.2vw, 32px);
+    color: var(--muted);
+    max-width: 30ch;
+    margin: 0 auto;
+    line-height: 1.55;
+    font-weight: 400;
+  }
+  .failure::before, .failure::after{
+    content:""; display:block; width:1px; height:48px;
+    background: var(--rule); margin: 0 auto;
+  }
+  .failure::before{ margin-bottom: 40px; }
+  .failure::after{ margin-top: 40px; }
+
+  /* ---------- Testimonials ---------- */
+  .quotes{ background: var(--linen-2); }
+  .quotes-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 64px);
+  }
+  .qcard{
+    padding: clamp(36px, 4vw, 56px) clamp(28px, 3vw, 48px);
+    background: var(--linen);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    position: relative;
+  }
+  .qcard .mark{
+    font-family: var(--serif-en);
+    color: var(--gold);
+    font-size: 96px;
+    line-height: .6;
+    height: 50px;
+    margin-bottom: 16px;
+  }
+  .qcard blockquote{
+    margin: 0;
+    font-family: var(--serif-ar);
+    font-style: italic;
+    font-size: clamp(20px, 1.7vw, 26px);
+    line-height: 1.6;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .qcard .by{
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: .06em;
+    display:flex; align-items:center; gap: 12px;
+  }
+  .qcard .by .dash{ width: 24px; height: 1px; background: var(--gold); display:inline-block; }
+
+  /* ---------- Final CTA ---------- */
+  .final{
+    text-align:center;
+    padding: clamp(110px, 14vw, 200px) 0;
+    background: var(--linen);
+    border-top: 1px solid var(--rule);
+  }
+  .final .eyebrow{ display:block; margin-bottom: 32px; }
+  .final h2{ max-width: 18ch; margin: 0 auto; }
+  .final h2 em{ font-style: italic; color: var(--gold-deep); font-weight:400; }
+  .final p{
+    margin: 32px auto 48px;
+    max-width: 38ch;
+    color: var(--muted);
+    font-size: clamp(15px, 1.1vw, 17px);
+    line-height: 1.85;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top: 1px solid var(--rule);
+    background: var(--linen);
+    padding: 60px 0 48px;
+  }
+  .foot{
+    display:grid;
+    grid-template-columns: 1.2fr 1fr .8fr;
+    gap: clamp(28px, 4vw, 60px);
+    align-items: start;
+  }
+  .foot-brand{ display:flex; flex-direction:column; gap: 14px; }
+  .foot-brand .row{ display:flex; align-items:center; gap: 12px; }
+  .foot-brand img{ width: 40px; height: 40px; object-fit: contain; }
+  .foot-brand .word{ font-family: var(--serif-en); font-size: 24px; font-weight: 500; }
+  .foot-brand .tag{ color: var(--muted); font-size: 14px; max-width: 28ch; line-height: 1.7; }
+
+  .foot h4{
+    margin: 0 0 18px;
+    font-family: var(--sans-ar);
+    font-size: 11px;
+    letter-spacing: .28em;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .foot ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: 10px; }
+  .foot ul a{
+    font-size: 14.5px; color: var(--ink-soft);
+    transition: color .25s ease;
+  }
+  .foot ul a:hover{ color: var(--gold-deep); }
+
+  .socials{ display:flex; flex-direction:column; gap: 14px; }
+  .socials a{
+    display:inline-flex; align-items:center; gap: 12px;
+    font-size: 14px; color: var(--ink-soft);
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    width: fit-content;
+    transition: border-color .25s ease, color .25s ease;
+  }
+  .socials a:hover{ border-color: var(--gold); color: var(--ink); }
+  .socials svg{ width: 16px; height: 16px; }
+
+  .foot-base{
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display:flex; justify-content:space-between; gap: 16px;
+    font-size: 12px; color: var(--muted);
+    letter-spacing: .04em;
+  }
+
+  /* ---------- Image placeholder (dark linen) ---------- */
+  .ph{
+    background: var(--linen-deep);
+    color: rgba(241,236,226,.55);
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ph .label{
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: .14em;
+    color: rgba(241,236,226,.45);
+    padding: 0 12px;
+  }
+  .ph::before{
+    content:"";
+    position:absolute;
+    inset: 14px;
+    border: 1px solid rgba(196,168,130,.18);
+    pointer-events: none;
+  }
+  .ph .corner{
+    position:absolute; top:18px; right:18px;
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(196,168,130,.6);
+    letter-spacing: .1em;
+  }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal{ opacity:0; transform: translateY(18px); transition: opacity 1.1s ease, transform 1.1s ease;}
+  .reveal.in{ opacity:1; transform: none; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 960px){
+    .nav-inner{ grid-template-columns: 1fr auto; height: 72px;}
+    .nav-links{ display:none; }
+    .strip{ grid-template-columns: repeat(6, 1fr); }
+    .strip .ph-1{ grid-column: 1 / span 3; transform:none; aspect-ratio: 3/4;}
+    .strip .ph-2{ grid-column: 4 / span 3; aspect-ratio: 3/4;}
+    .strip .ph-3{ grid-column: 1 / span 3; transform:none; aspect-ratio: 3/4;}
+    .strip .ph-4{ grid-column: 4 / span 3; aspect-ratio: 3/4;}
+    .problem-head{ grid-template-columns: 1fr; gap: 28px; }
+    .pains{ grid-template-columns: 1fr; gap: 36px; }
+    .guide-grid{ grid-template-columns: 1fr; }
+    .guide-img{ aspect-ratio: 4/3.6; }
+    .timeline-track{ display:none; }
+    .steps{ grid-template-columns: 1fr; gap: 56px; }
+    .work-grid{ grid-template-columns: 1fr; }
+    .work-card.c1, .work-card.c2, .work-card.c3, .work-card.c4{
+      grid-column: 1 / -1; transform: none;
+    }
+    .work-card .ph{ aspect-ratio: 4/3 !important; }
+    .quotes-grid{ grid-template-columns: 1fr; }
+    .foot{ grid-template-columns: 1fr; gap: 40px; }
+    .foot-base{ flex-direction: column; gap: 8px; }
+  }
+  @media (max-width: 560px){
+    .hero{ padding-top: 40px; }
+    .pill.lg{ padding: 16px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== NAV ============== -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#" class="nav-brand" aria-label="جدر">
+      <img src="assets/judr-logo.png" alt="" />
+      <span class="word">Judr</span>
+    </a>
+    <nav class="nav-links" aria-label="الرئيسية">
+      <a href="#" class="active">الرئيسية</a>
+      <a href="#work">أعمالنا</a>
+      <a href="#method">طريقتنا</a>
+      <a href="#contact">تواصل</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="pill sm" href="#contact">احجز استشارة</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">تصميم داخلي<span class="dot"></span>وتنفيذ</span>
+    <h1 class="reveal">
+      أنت تبغى مكان <span class="accent">يشبهك</span><br/>
+      مو مجرد مكان جميل
+    </h1>
+    <p class="sub reveal">جدر يصمم وينفذ مساحتك بناءً على شخصيتك أنت — لا على الترند، ولا على ذوق غيرك.</p>
+    <a class="pill lg" href="#contact">
+      احجز استشارتك المجانية
+      <span class="arrow">←</span>
+    </a>
+
+    <div class="strip">
+      <div class="ph ph-1"><span class="corner">i</span><span class="label">Living · Riyadh</span></div>
+      <div class="ph ph-2"><span class="corner">ii</span><span class="label">Atelier · Jeddah</span></div>
+      <div class="ph ph-3"><span class="corner">iii</span><span class="label">Residence · AlUla</span></div>
+      <div class="ph ph-4"><span class="corner">iv</span><span class="label">Office · Riyadh</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PROBLEM ============== -->
+<section class="problem">
+  <div class="wrap">
+    <div class="problem-head">
+      <div>
+        <div class="section-label"><span class="line"></span><span class="eyebrow">المشكلة · 01</span></div>
+        <h2 class="reveal">
+          كثير مساحات تبدو حلوة<br/>
+          لكنها <em style="font-style:italic;color:var(--gold-deep);font-weight:400">ما تمثل</em> أصحابها
+        </h2>
+      </div>
+      <p class="aside">المساحة الجميلة ما تكفي. المكان اللي يستحق إنك تعيش فيه هو اللي يحس فيك حتى لما ما تكون موجود.</p>
+    </div>
+
+    <div class="pains">
+      <div class="pain reveal">
+        <div class="num">i.</div>
+        <p>ضايع بين خيارات كثيرة، وكل أحد يقول لك شيء مختلف.</p>
+      </div>
+      <div class="pain reveal">
+        <div class="num">ii.</div>
+        <p>تشوف أعمال كثيرة، لكن ما تحس وحدة منها <em style="font-style:italic">"هي أنت"</em>.</p>
+      </div>
+      <div class="pain reveal">
+        <div class="num">iii.</div>
+        <p>خايف تصرف وتطلع بنتيجة عادية ما تحس إنها لك.</p>
+      </div>
+    </div>
+
+    <p class="problem-foot">هذا الإحساس طبيعي — المشكلة مو فيك، المشكلة في طريقة التصميم.</p>
+  </div>
+</section>
+
+<!-- ============== GUIDE ============== -->
+<section class="guide">
+  <div class="wrap">
+    <div class="guide-grid">
+      <div class="guide-img ph">
+        <span class="corner">— project no. 014</span>
+        <span class="label">Private Residence · Riyadh</span>
+      </div>
+      <div class="reveal">
+        <div class="section-label"><span class="line"></span><span class="eyebrow">المرشد · 02</span></div>
+        <span class="eyebrow" style="display:block;margin-bottom:14px">نحن المرشد، مو البطل</span>
+        <h2>إحنا نبدأ <em>منك أنت</em><br/>مو من الترند</h2>
+        <p class="lede">نفهم إن القرار صعب. مشروع عمر، أو مكان تعيش فيه كل يوم — ما يستاهل تخاطر فيه. ولهذا جدر ما يبدأ بالتصميم قبل ما يفهمك.</p>
+        <p class="proof">عملنا مع مساحات سكنية وتجارية في الرياض وجدة والمنطقة الشرقية — وفي كل مشروع كان السؤال الأول: <em style="color:var(--ink-soft)">من هو صاحب هذا المكان؟</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== METHODOLOGY ============== -->
+<section class="method" id="method">
+  <div class="wrap">
+    <div class="section-label center"><span class="line"></span><span class="eyebrow">طريقتنا · 03</span><span class="line"></span></div>
+    <h2>ثلاث خطوات — مساحة <em>تشبهك</em></h2>
+    <p class="method-intro">طريقة هادئة، واضحة، بدون تعقيد. تبدأ منك، وتنتهي بمساحة فيها روحك.</p>
+
+    <div class="timeline">
+      <div class="timeline-track" aria-hidden="true"></div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="num">01</div>
+          <h3>نكتشف شخصيتك</h3>
+          <p>نجلس معك ونسمع ذوقك، احتياجك، وطريقة حياتك — قبل أي قلم أو تصميم.</p>
+        </div>
+        <div class="step reveal">
+          <div class="num">02</div>
+          <h3>نصمم مساحة تعكسك</h3>
+          <p>تصميم مبني عليك أنت، مو على اللي شايع هذا الموسم.</p>
+        </div>
+        <div class="step reveal">
+          <div class="num">03</div>
+          <h3>ننفذها باحتراف</h3>
+          <p>نتولى التنفيذ الكامل من اختيار المواد لآخر تفصيل — بدون تعقيد عليك.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="method-divider" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- ============== WORK ============== -->
+<section class="work" id="work">
+  <div class="wrap">
+    <div class="work-head">
+      <div>
+        <div class="section-label"><span class="line"></span><span class="eyebrow">أعمال مختارة · 04</span></div>
+        <h2 class="reveal">أعمال تعكس<br/><em style="font-style:italic;color:var(--gold-deep);font-weight:400">أصحابها</em></h2>
+      </div>
+      <span class="meta">2023 — 2026 · الرياض، جدة، الخبر</span>
+    </div>
+
+    <div class="work-grid">
+      <a class="work-card c1 reveal" href="#">
+        <div class="ph"><span class="corner">№ 01</span><span class="label">Quiet Residence · Riyadh</span></div>
+        <div class="meta-row">
+          <p class="desc">مساحة صُممت لشخص يحب الهدوء الراقي.</p>
+          <span class="tag">Residential</span>
+        </div>
+      </a>
+      <a class="work-card c2 reveal" href="#">
+        <div class="ph"><span class="corner">№ 02</span><span class="label">Studio Office · Jeddah</span></div>
+        <div class="meta-row">
+          <p class="desc">مكتب يعكس طموح صاحبه — نظيف وواثق.</p>
+          <span class="tag">Workspace</span>
+        </div>
+      </a>
+      <a class="work-card c3 reveal" href="#">
+        <div class="ph"><span class="corner">№ 03</span><span class="label">Family Home · Khobar</span></div>
+        <div class="meta-row">
+          <p class="desc">بيت عائلي مبني حول طريقة العيش.</p>
+          <span class="tag">Residential</span>
+        </div>
+      </a>
+      <a class="work-card c4 reveal" href="#">
+        <div class="ph"><span class="corner">№ 04</span><span class="label">Boutique Atelier · Riyadh</span></div>
+        <div class="meta-row">
+          <p class="desc">مشروع تجاري له روح وشخصية واضحة.</p>
+          <span class="tag">Commercial</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAILURE LINE ============== -->
+<section class="failure">
+  <div class="wrap">
+    <p>كثير ناس ينتهون بمساحات شكلها حلو — لكنها ما تمثلهم.<br/>وهذا الإحساس لا يروح بعد التنفيذ.</p>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS ============== -->
+<section class="quotes">
+  <div class="wrap">
+    <div class="section-label"><span class="line"></span><span class="eyebrow">شهادات · 05</span></div>
+    <div class="quotes-grid">
+      <div class="qcard reveal">
+        <div class="mark">”</div>
+        <blockquote>ما توقعت إن بيتي يقدر يحس بـ "بيتي" بهالشكل. جدر فهموا شيء ما قدرت أوصفه.</blockquote>
+        <div class="by"><span class="dash"></span><span>عميل، جدة</span></div>
+      </div>
+      <div class="qcard reveal">
+        <div class="mark">”</div>
+        <blockquote>كنت خايف أندم — بعد التسليم حسيت إن المكان يشبهني بالضبط.</blockquote>
+        <div class="by"><span class="dash"></span><span>صاحب مكتب، الرياض</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="final" id="contact">
+  <div class="wrap">
+    <span class="eyebrow">ابدأ معنا</span>
+    <h2>مكانك يستحق أن <em>يشبهك</em></h2>
+    <p>المكان الصح مو اللي يعجب الناس.<br/>المكان الصح هو اللي تحس فيه إنه لك.</p>
+    <a class="pill lg" href="#">
+      ابدأ رحلتك مع جدر
+      <span class="arrow">←</span>
+    </a>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">
+      <div class="row">
+        <img src="assets/judr-logo.png" alt="" />
+        <span class="word">Judr · جدر</span>
+      </div>
+      <p class="tag">المكان يشبه صاحبه. تصميم داخلي وتنفيذ — المملكة العربية السعودية.</p>
+    </div>
+    <div>
+      <h4>روابط سريعة</h4>
+      <ul>
+        <li><a href="#">الرئيسية</a></li>
+        <li><a href="#work">أعمالنا</a></li>
+        <li><a href="#method">طريقتنا</a></li>
+        <li><a href="#contact">تواصل</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>تواصل</h4>
+      <div class="socials">
+        <a href="#" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-12.8 7.13L3 20l1.4-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg>
+          واتساب
+        </a>
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg>
+          إنستغرام
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap foot-base">
+    <span>© 2026 Judr Studio. جميع الحقوق محفوظة.</span>
+    <span>صُمم بهدوء — في الرياض</span>
+  </div>
+</footer>
+
+<script>
+  // sticky nav border on scroll
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 8) nav.classList.add('is-stuck');
+    else nav.classList.remove('is-stuck');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
